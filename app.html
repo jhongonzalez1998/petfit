@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetFit App - Mi Mascota</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row">
+
+    <div id="auth-screen" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl border border-slate-100 text-center">
+            <div class="mb-6">
+                <i class="fa-solid fa-paw text-5xl text-amber-500 mb-2"></i>
+                <h2 class="text-3xl font-extrabold text-slate-900">Pet<span class="text-amber-500">Fit</span></h2>
+                <p class="text-slate-500 text-sm mt-1">Ingresa para gestionar el bienestar de tu mascota</p>
+            </div>
+            
+            <form id="auth-form" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Correo Electrónico</label>
+                    <input type="email" id="auth-email" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Contraseña</label>
+                    <input type="password" id="auth-password" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
+                </div>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-amber-500/20 mt-2">
+                    Ingresar / Crear Cuenta
+                </button>
+            </form>
+            <p class="text-xs text-slate-400 mt-6">Si no tienes cuenta, se creará una automáticamente al ingresar tu correo por primera vez.</p>
+        </div>
+    </div>
+
+    <aside class="w-full md:w-64 bg-white border-r border-slate-100 p-6 flex flex-col justify-between hidden" id="app-sidebar">
+        <div>
+            <div class="flex items-center gap-2 text-2xl font-bold text-slate-900 mb-10">
+                <i class="fa-solid fa-paw text-amber-500"></i>Pet<span class="text-amber-500">Fit</span>
+            </div>
+            <nav class="space-y-2">
+                <a href="#" class="flex items-center gap-3 px-4 py-3 bg-amber-50 text-amber-600 rounded-xl font-bold transition">
+                    <i class="fa-solid fa-square-rss"></i> Mi Mascota
+                </a>
+            </nav>
+        </div>
+        <button id="logout-btn" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-red-500 rounded-xl font-semibold transition mt-auto">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
+        </button>
+    </aside>
+
+    <main class="flex-1 p-6 md:p-10 overflow-y-auto hidden" id="app-main">
+        <header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-10">
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-900">Panel de Control</h1>
+                <p class="text-slate-500" id="user-display">Cargando perfil...</p>
+            </div>
+            <div class="bg-amber-100 text-amber-800 text-sm font-bold px-4 py-2 rounded-full self-start flex items-center gap-2">
+                <i class="fa-solid fa-circle-user text-amber-600"></i> Plan Gratuito (Demo)
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 lg:col-span-1 h-fit">
+                <h3 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-amber-500"></i> Datos de Mascota
+                </h3>
+                <form id="pet-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Nombre</label>
+                        <input type="text" id="pet-name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Raza / Tipo</label>
+                        <input type="text" id="pet-breed" placeholder="Ej: Criollo, Schnauzer" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Peso (kg)</label>
+                        <input type="number" id="pet-weight" step="0.1" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition shadow-md">
+                        Guardar Información
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 lg:col-span-2 space-y-6 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-4">Estado Actual</h3>
+                    
+                    <div id="empty-state" class="text-center py-16 text-slate-400">
+                        <i class="fa-solid fa-paw text-5xl mb-3 opacity-60"></i>
+                        <p class="font-medium">Aún no has registrado ninguna mascota en tu cuenta.</p>
+                    </div>
+
+                    <div id="pet-display" class="hidden space-y-6">
+                        <div class="bg-gradient-to-r from-amber-500 to-amber-400 p-6 rounded-2xl text-white shadow-md flex items-center gap-5">
+                            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl shadow-inner">🐶</div>
+                            <div>
+                                <h4 class="text-3xl font-extrabold tracking-tight" id="view-name">--</h4>
+                                <p class="opacity-90 font-medium" id="view-breed">--</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Peso de control</span>
+                                <span class="text-2xl font-black text-slate-800" id="view-weight">-- kg</span>
+                            </div>
+                            <div class="bg-amber-50/60 p-5 rounded-2xl border border-amber-100/50">
+                                <span class="text-xs font-bold text-amber-600 uppercase tracking-wider block mb-1">Ración Diaria Recomendada</span>
+                                <span class="text-2xl font-black text-amber-600" id="view-food">-- g</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-4 text-xs text-slate-400 flex justify-between items-center">
+                    <span>Base de datos conectada en la nube</span>
+                    <i class="fa-solid fa-cloud-bolt text-emerald-500 text-sm"></i>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+        // CONFIGURACIÓN DE ACCESO (REEMPLAZA CON TUS PROPIAS CREDENCIALES)
+        const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co'
+        const SUPABASE_KEY = 'TU_ANON_KEY_DE_SUPABASE'
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+        // Referencias de UI
+        const authScreen = document.getElementById('auth-screen');
+        const appSidebar = document.getElementById('app-sidebar');
+        const appMain = document.getElementById('app-main');
+        const authForm = document.getElementById('auth-form');
+        const petForm = document.getElementById('pet-form');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Verificar si hay sesión activa al cargar
+        async function checkUser() {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (session) {
+                setupDashboard(session.user);
+            }
+        }
+        checkUser();
+
+        // Control de Flujos Login/Registro automático
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+
+            // Intento de login clásico
+            let { data, error } = await supabase.auth.signInWithPassword({ email, password })
+            
+            // Si hay error por credenciales, lo intentamos registrar como nuevo usuario automáticamente
+            if (error) {
+                let { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password })
+                if (signUpError) {
+                    alert('Error en autenticación: ' + signUpError.message);
+                } else {
+                    alert('¡Cuenta creada con éxito! Bienvenido a PetFit.');
+                    setupDashboard(signUpData.user);
+                }
+            } else {
+                setupDashboard(data.user);
+            }
+        });
+
+        // Mostrar Aplicación una vez dentro
+        function setupDashboard(user) {
+            authScreen.classList.add('hidden');
+            appSidebar.classList.remove('hidden');
+            appMain.classList.remove('hidden');
+            document.getElementById('user-display').innerText = `Registrado como: ${user.email}`;
+            fetchPetData(user.id);
+        }
+
+        // Guardar o Actualizar los datos de la mascota en Supabase
+        petForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { data: { user } } = await supabase.auth.getUser()
+            
+            const name = document.getElementById('pet-name').value;
+            const breed = document.getElementById('pet-breed').value;
+            const weight = parseFloat(document.getElementById('pet-weight').value);
+
+            const { error } = await supabase
+                .from('pets')
+                .upsert({ id: user.id, name, breed, weight })
+
+            if (error) {
+                alert('Error al guardar datos: ' + error.message);
+            } else {
+                renderPetCard({ name, breed, weight });
+                petForm.reset();
+            }
+        });
+
+        // Traer datos de la base de datos remota
+        async function fetchPetData(userId) {
+            let { data: pets, error } = await supabase
+                .from('pets')
+                .select('*')
+                .eq('id', userId)
+                .single()
+
+            if (pets) {
+                renderPetCard(pets);
+            }
+        }
+
+        // Pintar la tarjeta en pantalla y calcular porción automáticamente
+        function renderPetCard(pet) {
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('pet-display').classList.remove('hidden');
+
+            document.getElementById('view-name').innerText = pet.name;
+            document.getElementById('view-breed').innerText = pet.breed;
+            document.getElementById('view-weight').innerText = `${pet.weight} kg`;
+            
+            // Regla de negocio matemática: peso de la mascota * 12 gramos sugeridos diarios
+            const gramosAlimento = Math.round(pet.weight * 12);
+            document.getElementById('view-food').innerText = `${gramosAlimento} g`;
+        }
+
+        // Botón de salir
+        logoutBtn.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.reload();
+        });
+    </script>
+</body>
+</html>
